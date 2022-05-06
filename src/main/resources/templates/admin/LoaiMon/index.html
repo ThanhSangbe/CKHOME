@@ -1,0 +1,172 @@
+
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<head>
+<title>Phân loại Món</title>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+
+</head>
+
+<body>
+
+
+<section>
+	<div layout:fragment="content" class="container" style="padding-top:20px; padding-bottom:50px;">
+
+
+		<div class="text-center h3 mt-3">
+		<b>
+		Phân loại món ăn</b></div>
+		<div th:if="${loaiMons.size() > 0}">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Tên Loại Món</th>
+						<th>Tác vụ</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item:${loaiMons}">
+						<td scope="row" th:text="*{item.id}"></td>
+						<td th:text="*{item.tenLoai}"></td>
+						<td>
+							<!-- UPDATE --> <a class="btn btn-outline-success"
+							th:data-id="${item.id}" th:data-name="${item.tenLoai}"
+							onclick="updateHandle(this.getAttribute('data-id'),this.getAttribute('data-name'))"><i
+								class="fa fa-pencil-square-o" aria-hidden="true"></i></a> <!-- DELETE -->
+							<a class="btn btn-outline-danger" th:data-id="${item.id}"
+							th:data-name="${item.tenLoai}"
+							onclick="deleteHandle(this.getAttribute('data-id'),this.getAttribute('data-name'))"><i
+								class="fa fa-trash" aria-hidden="true"></i></a>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+		<div th:if="${loaiMons.size() == 0}">
+			Chưa có sản phẩm nào!<br>
+
+		</div>
+		<button type="button" class="btn btn-success btn-lg"
+			data-toggle="modal" data-target="#LoaiMonID">Thêm loại</button>
+		<!-- Button trigger modal -->
+
+
+		<!-- ADD -->
+		<div class="modal fade" id="LoaiMonID" tabindex="-1" role="dialog"
+			aria-labelledby="ThemLoaiMon" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Thêm loại món</h5>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/admin/LoaiMon/add}" method="post">
+							<div class="form-group">
+								<label for="LoaiMon">Name</label> <input type="text"
+									class="form-control" name="TenLoaiMon" id="LoaiMon"
+									aria-describedby="helpId" placeholder="Nhập tên loại món">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-danger">Thêm</button>
+						</form>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Đóng</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<!-- UPDATE -->
+		<div class="modal fade" id="UpdateID" tabindex="-1" role="dialog"
+			aria-labelledby="LoaiMonID" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Cập nhật loại món</h5>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form th:action="@{/admin/LoaiMon/update}" method="post">
+							<div class="form-group" hidden>
+								<label for="ID">ID</label> <input type="number"
+									class="form-control" name="ID" id="ID" aria-describedby="ID"
+									placeholder="DI">
+							</div>
+							<div class="form-group">
+								<label for="LoaiMonName">Tên loại</label> <input type="text"
+									class="form-control" name="LoaiMonName" id="LoaiMonName"
+									aria-describedby="helpId" placeholder="Nhập tên loại món">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">Cập Nhật</button>
+						</form>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Đóng</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- DELETE -->
+		<div class="modal fade" id="deleteID" tabindex="-1" role="dialog"
+			aria-labelledby="LoaiMonID" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Xác nhận</h5>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+
+						<div class="h4">
+							Bạn có chắc chắn xóa <b><span id="tenLoai"></span></b> không?
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<a id="xoa" class="btn btn-danger">Xóa</a>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Đóng</button>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			function updateHandle(id, name) {
+				$('#ID').attr('value', id);
+				$('#LoaiMonName').attr('value', name);
+				$('#UpdateID').modal('show');
+			}
+			function deleteHandle(id, name) {
+				$('#tenLoai').text(name);
+				$('#xoa').attr('href', '/admin/LoaiMon/delete/' + id);
+				$('#deleteID').modal('show');
+			}
+		</script>
+	</div>
+</section>
+</body>
+</html>
